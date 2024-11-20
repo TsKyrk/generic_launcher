@@ -1,11 +1,19 @@
 import subprocess
 import sys
+import argparse
 
 def main():
     config_file = './generic_launcher_configuration.txt'
     
+    # Set up argument parser
+    parser = argparse.ArgumentParser(description="Launch a command from a config file with optional arguments.")
+    parser.add_argument('args', nargs=argparse.REMAINDER, help="Arguments to be appended to the command")
+    
+    # Parse arguments
+    parsed_args = parser.parse_args()
+
     try:
-        # Read the first line of the file
+        # Read the first line of the configuration file
         with open(config_file, 'r') as file:
             command = file.readline().rstrip('\r\n')
         
@@ -13,8 +21,12 @@ def main():
             print("Error: The configuration file is empty or does not contain a valid command.")
             return
         
-        # print(f"Executing the command: {command}")
+        # Append the passed arguments to the command
+        if parsed_args.args:
+            command += ' ' + ' '.join(parsed_args.args)
         
+        # print(f"Executing the command: {command}")
+
         # Execute the command
         process = subprocess.Popen(
             command,
